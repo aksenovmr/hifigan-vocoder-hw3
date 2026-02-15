@@ -1,0 +1,45 @@
+defaults:
+  - _self_
+  - datasets: ruslan
+  - transforms: mel
+  - model: hifigan
+  - dataloader: hifigan
+  - writer: dummy
+  - metrics: example
+
+optimizer:
+  _target_: torch.optim.Adam
+  lr: 2e-4
+  betas: [0.8, 0.99]
+
+lr_scheduler_g: null
+
+lr_scheduler_d: null
+
+lr_scheduler: ${lr_scheduler_g}
+
+loss_function:
+  _target_: src.loss.hifigan_loss.HiFiGANLoss
+  config:
+    _target_: src.loss.hifigan_loss.HiFiGANLossConfig
+
+trainer:
+  _target_: src.trainer.hifigan_trainer.HiFiGANTrainer
+
+  seed: 42
+  device: auto
+  n_epochs: 1
+  save_period: 1
+  save_dir: saved
+  override: true
+  monitor: "off"
+  
+  resume_from: null
+
+  device_tensors: ["mel", "waveform"]
+
+  mpd:
+    _target_: src.model.hifigan.discriminator.MultiPeriodDiscriminator
+
+  msd:
+    _target_: src.model.hifigan.discriminator.MultiScaleDiscriminator

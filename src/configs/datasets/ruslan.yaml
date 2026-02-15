@@ -1,0 +1,13 @@
+train:
+  _target_: src.datasets.ruslan_dataset.RUSLANDataset
+  root_dir: data/RUSLAN
+  split: train
+  split_ratio: 0.9
+  max_audio_length: null
+
+val:
+  _target_: src.datasets.ruslan_dataset.RUSLANDataset
+  root_dir: data/RUSLAN
+  split: val
+  split_ratio: 0.9
+  max_audio_length: null

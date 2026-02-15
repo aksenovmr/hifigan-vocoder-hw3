@@ -1,0 +1,11 @@
+_target_: torch.utils.data.DataLoader
+
+batch_size: 16
+num_workers: 0
+pin_memory: true
+shuffle: true
+
+collate_fn:
+  _target_: src.datasets.collate.collate_fn_vocoder
+  segment_length: 32768
+  hop_length: 256

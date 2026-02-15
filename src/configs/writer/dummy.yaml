@@ -1,0 +1,7 @@
+_target_: src.logger.dummy.DummyWriter
+
+run_name: dummy
+id_length: 8
+loss_names: []
+log_checkpoints: false
+mode: disabled
