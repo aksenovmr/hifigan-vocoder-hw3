@@ -16,27 +16,37 @@
 ### Для локальной проверки:
 
 1. Клонирование репозитория
+   
 git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
+
 cd hifigan-vocoder-hw3
 
 2. Активация виртуального окружения
+
 python -m venv .venv
+
 source .venv/bin/activate # Linux/ Mac
+
 .venv\Scripts\activate  # Windows
 
-2. Установка зависимостей
+3. Установка зависимостей
+
 pip install --upgrade pip
+
 pip install -r requirements.txt
 
-3. Скачивание весов
+4. Скачивание весов
 
 Скачайте файл:
+
 checkpoint-epoch120.pth из https://huggingface.co/aksenovmr/hifigan-vocoder-hw3/tree/main
 
 Создайте папку для весов:
+
 mkdir -p checkpoints
 
 И поместите файл туда:
+
 mv checkpoint-epoch120.pth checkpoints/
 
 4. Запуск синтеза аудио
@@ -54,15 +64,21 @@ Audio -> Mel -> Vocoder -> Audio
 ### Для проверки в Google Colab:
 
 1. Клонирование репозитория
+   
 !git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
+
 %cd hifigan-vocoder-hw3
 
 2. Установка зависимостей
+   
 !pip install --upgrade pip
+
 !pip install -r requirements.txt
+
 !pip install huggingface_hub soundfile
 
 3. Скачивание весов
+   
 from huggingface_hub import hf_hub_download
 
 CHECKPOINT_PATH = hf_hub_download(
@@ -72,6 +88,7 @@ CHECKPOINT_PATH = hf_hub_download(
 print("Checkpoint downloaded:", CHECKPOINT_PATH)
 
 4. Запуск синтеза аудио
+   
 !python synthesize.py \
   --config src/configs/hifigan.yaml \
   --checkpoint $CHECKPOINT_PATH \
