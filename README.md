@@ -16,25 +16,25 @@
 ### Для локальной проверки:
 
 1. Клонирование репозитория
-   
+'''
 git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
 
 cd hifigan-vocoder-hw3
-
+'''
 2. Активация виртуального окружения
-
+'''
 python -m venv .venv
 
 source .venv/bin/activate # Linux/ Mac
 
 .venv\Scripts\activate  # Windows
-
+'''
 3. Установка зависимостей
-
+'''
 pip install --upgrade pip
 
 pip install -r requirements.txt
-
+'''
 4. Скачивание весов
 
 Скачайте файл:
@@ -42,21 +42,21 @@ pip install -r requirements.txt
 checkpoint-epoch120.pth из https://huggingface.co/aksenovmr/hifigan-vocoder-hw3/tree/main
 
 Создайте папку для весов:
-
+'''
 mkdir -p checkpoints
-
+'''
 И поместите файл туда:
-
+'''
 mv checkpoint-epoch120.pth checkpoints/
-
+'''
 4. Запуск синтеза аудио
-
+'''
 python synthesize.py \
   --config src/configs/hifigan.yaml \
   --checkpoint checkpoints/checkpoint-epoch120.pth \
   --input_dir demo/mos_ground_truth \
   --output_dir demo/mos_samples
-
+'''
 Режим работы:
 
 Audio -> Mel -> Vocoder -> Audio
@@ -64,21 +64,21 @@ Audio -> Mel -> Vocoder -> Audio
 ### Для проверки в Google Colab:
 
 1. Клонирование репозитория
-   
+'''
 !git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
 
 %cd hifigan-vocoder-hw3
-
+'''
 2. Установка зависимостей
-   
+'''
 !pip install --upgrade pip
 
 !pip install -r requirements.txt
 
 !pip install huggingface_hub soundfile
-
+'''
 3. Скачивание весов
-   
+'''
 from huggingface_hub import hf_hub_download
 
 CHECKPOINT_PATH = hf_hub_download(
@@ -86,15 +86,15 @@ CHECKPOINT_PATH = hf_hub_download(
     filename="checkpoint-epoch120.pth")
 
 print("Checkpoint downloaded:", CHECKPOINT_PATH)
-
+'''
 4. Запуск синтеза аудио
-   
+'''  
 !python synthesize.py \
   --config src/configs/hifigan.yaml \
   --checkpoint $CHECKPOINT_PATH \
   --input_dir demo/mos_ground_truth \
   --output_dir demo/mos_samples
-
+'''
 
 ### Обучение модели
 
@@ -104,17 +104,17 @@ print("Checkpoint downloaded:", CHECKPOINT_PATH)
 2) Добавить датасет RUSLAN в распакованном виде по пути: data/RUSLAN/
 
 Для запуска обучения:
-
+'''
 python train.py -cn hifigan writer=wandb trainer.n_epochs=120
-
+'''
 Для возобновления обучения:
-
+'''
 python train.py \
   -cn hifigan \
   writer=wandb \
   trainer.resume_from=checkpoint-epoch120.pth \
   trainer.n_epochs=150
-
+'''
 ## Логи обучения
 
 Обучение логируется в Weights & Biases. Отчет с графиками и аудио доступен по ссылке:
