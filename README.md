@@ -1,145 +1,126 @@
-# PyTorch Template for DL projects
+## Аннотация
 
-<p align="center">
-  <a href="#about">About</a> •
-  <a href="#tutorials">Tutorials</a> •
-  <a href="#examples">Examples</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#useful-links">Useful Links</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
-</p>
+Этот репозиторий представляет собой проект по реализации вокодера для генерации аудио из mel-спектрограмм.
+В проекте реализован вокодер на основе статьи HiFi-GAN: ["Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis"](https://arxiv.org/pdf/2010.05646).
+Обучение модели проводилось на датасете RUSLAN, состоящем из 22200 аудиозаписей на русском языке.
+Основное применение обученной модели заключается в resynthesis, то есть в синтезировании аудио из mel-спектрограммы исходного аудио.
+Датасет скачивается отдельно по [ссылке](https://ruslan-corpus.github.io/)
 
-<p align="center">
-<a href="https://github.com/Blinorot/pytorch_project_template/generate">
-  <img src="https://img.shields.io/badge/use%20this-template-green?logo=github">
-</a>
-<a href="https://github.com/Blinorot/pytorch_project_template/blob/main/LICENSE">
-   <img src=https://img.shields.io/badge/license-MIT-blue.svg>
-</a>
-<a href="https://github.com/Blinorot/pytorch_project_template/blob/main/CITATION.cff">
-   <img src="https://img.shields.io/badge/cite-this%20repo-purple">
-</a>
-</p>
+Подробнее о модели и проведенной работе, а также об анализе результатов можно ознакомиться в [отчете](https://github.com/aksenovmr/hifigan-vocoder-hw3/blob/main/report/%D0%9E%D0%A2%D0%A7%D0%95%D0%A2.ipynb)
 
-## About
 
-This repository contains a template for [PyTorch](https://pytorch.org/)-based Deep Learning projects.
+## Запуск вокодера
 
-The template utilizes different python-dev techniques to improve code readability. Configuration methods enhance reproducibility and experiments control.
+Для проверки работоспособности вокодера можно воспользоваться следующей инструкцией.
 
-The repository is released as a part of the [HSE DLA course](https://github.com/markovka17/dla), however, can easily be adopted for any DL-task.
+### Для локальной проверки:
 
-This template is the official recommended template for the [EPFL CS-433 ML Course](https://www.epfl.ch/labs/mlo/machine-learning-cs-433/).
+1. Клонирование репозитория
+git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
+cd hifigan-vocoder-hw3
 
-> 📖 **If you use this template in your work, please cite this repository or include a reference. Attribution supports the project and encourages continued development.**
+2. Активация виртуального окружения
+python -m venv .venv
+source .venv/bin/activate # Linux/ Mac
+# .venv\Scripts\activate  # Windows
 
-## Tutorials
+2. Установка зависимостей
+pip install --upgrade pip
+pip install -r requirements.txt
 
-This template utilizes experiment tracking techniques, such as [WandB](https://docs.wandb.ai/) and [Comet ML](https://www.comet.com/docs/v2/), and [Hydra](https://hydra.cc/docs/intro/) for the configuration. It also automatically reformats code and conducts several checks via [pre-commit](https://pre-commit.com/). If you are not familiar with these tools, we advise you to look at the tutorials below:
+3. Скачивание весов
 
-- [Python Dev Tips](https://github.com/ebezzam/python-dev-tips): information about [Git](https://git-scm.com/doc), [pre-commit](https://pre-commit.com/), [Hydra](https://hydra.cc/docs/intro/), and other stuff for better Python code development. The YouTube recording of the workshop is available [here](https://youtu.be/okxaTuBdDuY).
+Скачайте файл:
+checkpoint-epoch120.pth из https://huggingface.co/aksenovmr/hifigan-vocoder-hw3/tree/main
 
-- [Seminar on R&D Coding 2025](https://youtu.be/PE1zaW5it_A): Seminar from the [LauzHack Deep Learning Bootcamp](https://github.com/LauzHack/deep-learning-bootcamp/) with discussion on logging, project-based coding, configuration, and reproducibility. The materials can be found [here](https://github.com/LauzHack/deep-learning-bootcamp/tree/summer25/day05).
+Создайте папку для весов:
+mkdir -p checkpoints
 
-- [Seminar on R&D Coding 2024](https://youtu.be/sEA-Js5ZHxU): Seminar from the [LauzHack Deep Learning Bootcamp](https://github.com/LauzHack/deep-learning-bootcamp/) with template discussion and reasoning. It also explains how to work with [WandB](https://docs.wandb.ai/). The seminar materials can be found [here](https://github.com/LauzHack/deep-learning-bootcamp/blob/main/day03/Seminar_WandB_and_Coding.ipynb).
+И поместите файл туда:
+mv checkpoint-epoch120.pth checkpoints/
 
-- [HSE DLA Course Introduction Week](https://github.com/markovka17/dla/tree/2024/week01): combines the two seminars above into one with some updates, including an extra example for [Comet ML](https://www.comet.com/docs/v2/).
+4. Запуск синтеза аудио
 
-- [PyTorch Basics](https://github.com/markovka17/dla/tree/2024/week01/intro_to_pytorch): several notebooks with [PyTorch](https://pytorch.org/docs/stable/index.html) basics and corresponding seminar recordings from the [LauzHack Deep Learning Bootcamp](https://github.com/LauzHack/deep-learning-bootcamp/).
+python synthesize.py \
+  --config src/configs/hifigan.yaml \
+  --checkpoint checkpoints/checkpoint-epoch120.pth \
+  --input_dir demo/mos_ground_truth \
+  --output_dir demo/mos_samples
 
-To start working with a template, just click on the `use this template` button.
+Режим работы:
 
-<a href="https://github.com/Blinorot/pytorch_project_template/generate">
-  <img src="https://img.shields.io/badge/use%20this-template-green?logo=github">
-</a>
+Audio -> Mel -> Vocoder -> Audio
 
-You can choose any of the branches as a starting point. [Set your choice as the default branch](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch) in the repository settings. You can also [delete unnecessary branches](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository).
+### Для проверки в Google Colab:
 
-## Examples
+1. Клонирование репозитория
+!git clone https://github.com/aksenovmr/hifigan-vocoder-hw3.git
+%cd hifigan-vocoder-hw3
 
-> [!IMPORTANT]
-> The main branch leaves some of the code parts empty or fills them with dummy examples, showing just the base structure. The final users can add code required for their own tasks.
+2. Установка зависимостей
+!pip install --upgrade pip
+!pip install -r requirements.txt
+!pip install huggingface_hub soundfile
 
-You can find examples of this template completed for different tasks in other branches:
+3. Скачивание весов
+from huggingface_hub import hf_hub_download
 
-- [Image classification](https://github.com/Blinorot/pytorch_project_template/tree/example/image-classification): simple classification problem on [MNIST](https://yann.lecun.com/exdb/mnist/) and [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) datasets.
+CHECKPOINT_PATH = hf_hub_download(
+    repo_id="aksenovmr/hifigan-vocoder-hw3",
+    filename="checkpoint-epoch120.pth")
 
-- [ASR](https://github.com/Blinorot/pytorch_project_template/tree/example/asr): template for the automatic speech recognition (ASR) task. Some of the parts (for example, `collate_fn` and beam search for `text_encoder`) are missing for studying purposes of [HSE DLA course](https://github.com/markovka17/dla).
+print("Checkpoint downloaded:", CHECKPOINT_PATH)
 
-## Installation
+4. Запуск синтеза аудио
+!python synthesize.py \
+  --config src/configs/hifigan.yaml \
+  --checkpoint $CHECKPOINT_PATH \
+  --input_dir demo/mos_ground_truth \
+  --output_dir demo/mos_samples
 
-Installation may depend on your task. The general steps are the following:
 
-0. (Optional) Create and activate new environment using [`conda`](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html) or `venv` ([`+pyenv`](https://github.com/pyenv/pyenv)).
+### Обучение модели
 
-   a. `conda` version:
+Для начала нужно: 
 
-   ```bash
-   # create env
-   conda create -n project_env python=PYTHON_VERSION
+1) Создать папки data/RUSLAN в корне репозитория
+2) Добавить датасет RUSLAN в распакованном виде по пути: data/RUSLAN/
 
-   # activate env
-   conda activate project_env
-   ```
+Для запуска обучения:
 
-   b. `venv` (`+pyenv`) version:
+python train.py -cn hifigan writer=wandb trainer.n_epochs=120
 
-   ```bash
-   # create env
-   ~/.pyenv/versions/PYTHON_VERSION/bin/python3 -m venv project_env
+Для возобновления обучения:
 
-   # alternatively, using default python version
-   python3 -m venv project_env
+python train.py \
+  -cn hifigan \
+  writer=wandb \
+  trainer.resume_from=checkpoint-epoch120.pth \
+  trainer.n_epochs=150
 
-   # activate env
-   source project_env/bin/activate
-   ```
+## Логи обучения
 
-1. Install all required packages
+Обучение логируется в Weights & Biases. Отчет с графиками и аудио доступен по ссылке:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+https://api.wandb.ai/links/aksenovmr-hse-university/ivxg45t3
 
-2. Install `pre-commit`:
-   ```bash
-   pre-commit install
-   ```
+Присутствуют следующие графики: train_loss, val_loss, grad_norm, steps_per_sec_train, steps_per_sec_val, epoch_train, а также MOS-аудио по эпохам.
 
-## How To Use
+Логи обучения в виде файла .log лежат в репозитории по пути [report/output.log](https://github.com/aksenovmr/hifigan-vocoder-hw3/blob/main/report/output.log)
 
-To train a model, run the following command:
+## Демо
+В проекте также присутствует jupyter-ноутбук [demo.ipynb](https://github.com/aksenovmr/hifigan-vocoder-hw3/blob/main/demo/%D0%94%D0%B5%D0%BC%D0%BE.ipynb) с демонстрацией работы синтезатора.
 
-```bash
-python3 train.py -cn=CONFIG_NAME HYDRA_CONFIG_ARGUMENTS
-```
+А именно:
 
-Where `CONFIG_NAME` is a config from `src/configs` and `HYDRA_CONFIG_ARGUMENTS` are optional arguments.
+1. Клонирование репозитория
 
-To run inference (evaluate the model or save predictions):
+2. Загрузка модели и весов
 
-```bash
-python3 inference.py HYDRA_CONFIG_ARGUMENTS
-```
+3. Демонстрация resynthesis
 
-## Useful Links:
+4. Воспроизведение MOS-примеров с демонстрацией качества
 
-You may find the following links useful:
+Ноутбук запускается в Google Colab.
 
-- [Report branch](https://github.com/Blinorot/pytorch_project_template/tree/report): Guidelines for writing a scientific report/paper (with an emphasis on DL projects).
-
-- [CLAIRE Template](https://github.com/CLAIRE-Labo/python-ml-research-template): additional template by [EPFL CLAIRE Laboratory](https://www.epfl.ch/labs/claire/) that can be combined with ours to enhance experiments reproducibility via [Docker](https://www.docker.com/).
-
-- [Mamba](https://github.com/mamba-org/mamba) and [Poetry](https://python-poetry.org/): alternatives to [Conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html) and [pip](https://pip.pypa.io/en/stable/installation/) package managers given above.
-
-- [Awesome README](https://github.com/matiassingers/awesome-readme): a list of awesome README files for inspiration. Check the basics [here](https://github.com/PurpleBooth/a-good-readme-template).
-
-## Credits
-
-This repository is based on a heavily modified fork of [pytorch-template](https://github.com/victoresque/pytorch-template) and [asr_project_template](https://github.com/WrathOfGrapes/asr_project_template) repositories.
-
-## License
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+Демо всей TTS системы проводилось в рамках написания отчета и находится в отдельном [файле](https://github.com/aksenovmr/hifigan-vocoder-hw3/blob/main/report/%D0%94%D0%B5%D0%BC%D0%BE_%D0%B8_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7_TTS.ipynb) с демонстрацией работы предобученной акустической модели, переводящей текст в аудио, а также вокодера, осуществляющего синтез речи на основе mel-спектрограмм, полученных из этих аудио.
