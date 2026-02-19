@@ -22,7 +22,7 @@ cd hifigan-vocoder-hw3
 2. Активация виртуального окружения
 python -m venv .venv
 source .venv/bin/activate # Linux/ Mac
-# .venv\Scripts\activate  # Windows
+.venv\Scripts\activate  # Windows
 
 2. Установка зависимостей
 pip install --upgrade pip
